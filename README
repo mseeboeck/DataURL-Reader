@@ -1,0 +1,10 @@
+DataURL-Reader
+
+A browser based application to create data URLs from image files.
+
+Open index.html in your browser and drag a small image file (up to 1 MB) to
+the indicated drop area. The data URL of this file will be displayed below.
+
+Data URLs are a great way to embed small images in HTML pages without the
+need for extra files. Note that since they are base64 encoded a data URL
+will be about 1/3 bigger than the original file size.
