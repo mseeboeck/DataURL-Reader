@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <title>DataURL Reader</title>
+    <style type="text/css">
+      html {
+        height:             100%;
+      }
+      body {
+        font:               14px Arial;
+        color:              #004;
+        height:             100%;
+        overflow-y:         scroll;
+        margin:             0;
+        padding:            0;
+      }
+      .page {
+        width:              800px;
+        margin:             0 auto;
+        min-height:         100%;
+        padding:            0;
+        -webkit-box-shadow: 0 0 10px grey;
+        box-shadow:         0 0 10px grey;
+      }
+      .head {
+        padding:            1.5em 0.5em;
+        font-size:          1.5em;
+        text-shadow:        0 1px 0 white;
+        background-color:   #eef;
+      }
+      .body {
+        padding:            0.5em;
+      }
+      .drop {
+        margin:             0.7em auto;
+        width:              750px;
+        border-radius:      0.5em;
+      }
+      #dropContainer {
+        border:             solid 2px #800;
+        background-color:   #fee;
+        color:              #888;
+        text-shadow:        0 1px 0 #fff;
+        padding:            2em 0;
+        text-align:         center;
+        font-weight:        bold;
+        font-size:          1.1em;
+      }
+      #dropResult {
+        border:             solid 2px #888;
+        min-height:         500px;
+        width:              746px;
+        border-radius:      0.5em;
+        padding:            0 0 0 0.2em;
+      }
+    </style>
+    <script type="text/javascript">/*<![CDATA[*/
+
+      FOO = window.FOO || {};
+      (function(){
+        // private vars
+        var dropContainer, dropResult;
+
+        FOO.init = function() {
+          dropResult = document.getElementById("dropResult");
+          dropResult.value = '';
+
+          dropContainer = document.getElementById("dropContainer");
+          dropContainer.addEventListener("dragenter", function(event){
+            dropResult.value = '';
+            dropContainer.style.backgroundColor = '#ffcccc';
+            event.stopPropagation();
+            event.preventDefault();
+            }, false);
+          dropContainer.addEventListener("dragleave", function(event){
+            dropContainer.style.backgroundColor = '#ffeeee';
+            event.stopPropagation();
+            event.preventDefault();
+            }, false);
+          dropContainer.addEventListener("dragover", function(event){
+            event.stopPropagation();
+            event.preventDefault();
+          }, false);
+          dropContainer.addEventListener("drop", FOO.handleDrop, false);
+        }
+
+        FOO.handleDrop = function(e) {
+          var dt    = e.dataTransfer,
+              files = dt.files,
+              count = files.length;
+
+          e.stopPropagation();
+          e.preventDefault();
+
+          for (var i = 0; i < count; i++) {
+            if(files[i].size < 1048576) {
+              var file = files[i],
+                  droppedFileName = file.name,
+                  reader = new FileReader();
+                  reader.index = i;
+                  reader.file = file;
+              reader.addEventListener("loadend", FOO.showDataURL, false);
+              reader.readAsDataURL(file);
+            } else {
+              alert("file is too big, needs to be below 1mb");
+            }
+          }
+        }
+
+        FOO.showDataURL = function(e) {
+          dropResult.value = e.target.result;
+        }
+        window.addEventListener("load", FOO.init, false);
+      })();
+
+    /*]]>*/</script>
+  </head>
+  <body>
+    <div class="page">
+      <div class="head">Drag and Drop &ndash; File API</div>
+      <div class="body">
+        <div class="drop" id="dropContainer">Drop Image File Here ...</div>
+        <div class="drop"><textarea id="dropResult"></textarea></div>
+      </div>
+    </div>
+  </body>
+</html>
